@@ -322,3 +322,77 @@ button.btn-danger {
   border-color: #ef4444;
   box-shadow: 0 0 8px rgba(239,68,68,0.25);
 }
+
+
+
+/***parte 2 de la barra deslizable */
+/* ===== Contenedor del cropper: que pueda scrollear dentro del modal ===== */
+#cropper-container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* suaviza scroll en iOS */
+}
+
+/* Evita que el gesto de scroll se capture en la imagen (el recorte sigue funcionando) */
+#cropper-image {
+  touch-action: none; /* la página no se mueve cuando tocas la imagen */
+}
+
+/* ===== Barra deslizable interna ===== */
+.scroll-strip {
+  width: 100%;
+  height: 56px;
+  margin: 10px 0 8px;
+  border-radius: 12px;
+  background: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  touch-action: pan-y;      /* aquí SÍ permitimos gesto vertical */
+  user-select: none;
+}
+
+.scroll-strip .grabber {
+  width: 48px;
+  height: 6px;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.scroll-strip small {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+/* ===== Mejora visual del cuadro de recorte (Cropper.js) ===== */
+/* contorno del área recortada */
+.cropper-view-box {
+  outline: 2px solid #3b82f6;              /* azul elegante */
+  box-shadow: 0 0 0 9999px rgba(0,0,0,.45); /* oscurecer fuera del recorte */
+}
+
+/* líneas de borde */
+.cropper-line {
+  background-color: #3b82f6;
+  opacity: 0.9;
+}
+
+/* puntos/handlers */
+.cropper-point {
+  width: 12px; height: 12px;
+  border-radius: 6px;
+  background-color: #fff;
+  border: 2px solid #3b82f6;
+  opacity: 1;
+}
+
+/* líneas guías (tercios) más sutiles */
+.cropper-dashed {
+  border-color: rgba(59,130,246,0.35);
+}
+
+/* cara del recorte transparente para que no “aplane” colores al mover */
+.cropper-face {
+  background-color: transparent;
+}
