@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Great American Hospitality</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="icons8-document-94.png">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Great American Hospitality</h1>
+    <h2>Inicia sesión en tu cuenta</h2>
+    
+    <input type="email" id="email" placeholder="Correo Electrónico" />
+    <input type="password" id="password" placeholder="Contraseña" />
+    
+    <button onclick="login()">Iniciar Sesión</button>
+    <p id="error-message"></p>
+    <p class="note">Contacta al Departamento De Sistemas si necesitas una cuenta.</p>
+
+    <footer>
+    <p>&copy; 2025 Systems Department | Potenciando la calidad profesional</p>
+  </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

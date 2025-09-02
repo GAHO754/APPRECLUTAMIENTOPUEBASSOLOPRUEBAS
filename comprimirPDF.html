@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Redirigiendo a PDF24</title>
+  <link rel="stylesheet" href="comprimirPDF.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Serás redirigido para comprimir tu PDF</h1>
+    <p>Estás siendo enviado al sitio <strong>pdf24.org</strong> para comprimir tus archivos.</p>
+    <button id="goNow">Ir ahora</button>
+    <button id="backBtn">← Regresar</button>
+  </div>
+
+  <script>
+    document.getElementById("goNow").addEventListener("click", function () {
+      window.location.href = "https://tools.pdf24.org/es/comprimir-pdf";
+    });
+
+    document.getElementById("backBtn").addEventListener("click", function () {
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>

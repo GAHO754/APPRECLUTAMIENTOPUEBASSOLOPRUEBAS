@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard | Great American Hospitality</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <link rel="icon" type="image/png" href="icons8-document-94.png">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <body class="layout">
+  <header>
+  <div class="empresa">Great American Hospitality</div>
+  <div class="user-info" style="display: flex; align-items: center; gap: 15px;">
+    <!-- Nombre de usuario y botón cerrar sesión -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span id="userName">Nombre Usuario</span>
+      <button id="logout-btn" style="padding: 5px 10px; cursor: pointer;">Cerrar Sesión</button>
+    </div>
+
+    <!-- Botón perfil con iniciales -->
+    <button id="profileBtn" title="Editar perfil" style="width: 40px; height: 40px; border-radius: 50%; background-color: #030303; color: rgb(250, 0, 0); border: none; font-weight: bold; cursor: pointer;">
+      <div id="userInitials" style="line-height: 40px;">GA</div>
+    </button>
+  </div>
+</header>
+
+
+  <main>
+    <h2 id="welcomeMsg">Bienvenido, Usuario</h2>
+    <p class="start-question">¿Listo(a) para comenzar?</p>
+
+    <div class="btn-group">
+  <button class="main-btn" id="btnGeneral">Escanear Documentos</button>
+  <button class="main-btn" id="btnComprimirPDF">Comprimir PDF</button>
+</div>
+
+<script>
+  document.getElementById("btnGeneral").addEventListener("click", function () {
+    window.location.href = "Escaneodocumentos.html";
+  });
+
+  document.getElementById("btnComprimirPDF").addEventListener("click", function () {
+    window.location.href = "comprimirPDF.html"; // Asegúrate de crear esta página
+  });
+</script>
+
+</script>
+
+    <section class="how-it-works">
+      <h3>Cómo Funciona</h3>
+      <ol>
+        <li>Seleccionar Escanerar Documentos.</li>
+        <li>Escanear: Captura cada documento requerido para el empleado según la categoría seleccionada.</li>
+        <li>Identificar: Ingresa el nombre completo del empleado.</li>
+        <li>Archivar: Se generará automáticamente un archivo ZIP con los documentos de la categoría procesada.</li>
+        <li>Compartir: Comparte fácilmente el archivo ZIP o PDF a través de plataformas comunes.</li>
+      </ol>
+    </section>
+  </main>
+
+  <!-- Carrusel Infinito -->
+<div class="carrusel-container">
+  <div class="carrusel-slide">
+    <!-- Primer grupo -->
+    <img src="carrusel1234.png" alt="Imagen 1">
+    <img src="carrusel1234.png" alt="Imagen 2">
+    <img src="carrusel1234.png" alt="Imagen 3">
+    <img src="carrusel1234.png" alt="Imagen 4">
+    <!-- Segundo grupo (duplicado) -->
+    <img src="carrusel1234.png" alt="Imagen 1">
+    <img src="carrusel1234.png" alt="Imagen 2">
+    <img src="carrusel1234.png" alt="Imagen 3">
+    <img src="carrusel1234.png" alt="Imagen 4">
+  </div>
+</div>
+
+
+ <footer style="background-color: black; color: white; padding: 20px; text-align: center;">
+  © 2025 Great American Hospitality. Todos los derechos reservados.
+</footer>
+
+
+  <!-- Modal perfil -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h3>Editar Perfil</h3>
+      <div class="profile-pic-container">
+        <img id="profilePic" src="default-profile.png" alt="Foto de perfil" />
+      </div>
+      <input type="file" accept="image/*" id="fileInput" />
+      <button id="cameraBtn">Tomar Foto con Cámara</button>
+      <input type="text" id="nameInput" placeholder="Cambiar nombre" />
+      <button id="saveProfileBtn">Guardar Cambios</button>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+
+</body>
+</html>

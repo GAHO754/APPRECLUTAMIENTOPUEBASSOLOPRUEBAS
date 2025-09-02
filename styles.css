@@ -1,0 +1,324 @@
+/* Estilo general */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom, #f4f4f4, #e0e0e0);
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Encabezado animado */
+h1 {
+  text-align: center;
+  font-size: 3rem;
+  color: #0078d4;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  animation: fadeInDown 1s ease-out;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Contenedor de documentos */
+#document-container {
+  margin-top: 20px;
+}
+
+.document-box {
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.document-box:hover {
+  transform: translateY(-5px);
+}
+
+.image-preview {
+  max-width: 100%;
+  margin-top: 10px;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+/* Botones */
+.button-group {
+  margin-top: 30px;
+  margin-bottom: 20px; /* espacio extra antes del footer */
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #0078d4, #005fa3);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Input */
+input[type="text"] {
+  padding: 10px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus {
+  box-shadow: 0 0 5px #0078d4;
+  outline: none;
+}
+
+/* Modal de recorte */
+#cropper-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeInModal 0.5s ease forwards;
+}
+
+#cropper-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#cropper-image {
+  max-width: 100%;
+  max-height: 70vh;
+  display: block;
+  margin: auto;
+  cursor: crosshair;
+}
+
+/* Modal de cámara en vivo */
+#live-camera-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeInModal 0.5s ease forwards;
+}
+
+#live-video {
+  width: 90%;
+  max-height: 70vh;
+  border-radius: 10px;
+  border: 2px solid #fff;
+  background: #000;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Footer */
+footer {
+  background-color: black;
+  color: white;
+  padding: 40px;
+  text-align: center;
+  font-size: 0.9rem;
+  border-top: 1px solid #333;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+  margin-top: auto;
+}
+
+
+/*numero de imss*/
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.input-group label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.input-group input {
+  padding: 12px 16px;
+  width: 280px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.input-group input:focus {
+  border-color: #0078d4;
+  box-shadow: 0 0 8px rgba(0,120,212,0.3);
+  outline: none;
+}
+
+
+/**/
+/* ===== Header con botón regresar ===== */
+#header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+#header h1 {
+  margin: 0;
+}
+#header button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #6b7280, #374151); /* gris a gris oscuro */
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+#header button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+/* ===== Layout responsive de documentos ===== */
+#document-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+@media (min-width: 720px) {
+  #document-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (min-width: 1080px) {
+  #document-container {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.document-box label {
+  display: inline-block;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #1f2937; /* gris 800 */
+}
+
+/* Alinea controles dentro de cada caja */
+.document-box button {
+  margin-right: 8px;
+  margin-top: 6px;
+}
+
+/* Estado visual del documento */
+.status-dot {
+  display: inline-block;
+  min-width: 1.6rem;
+  text-align: center;
+  margin-left: 6px;
+  font-size: 1.1rem;
+}
+
+/* Limitar altura de preview para que no rompa la tarjeta */
+.image-preview {
+  max-height: 340px;
+  object-fit: contain;
+}
+
+/* ===== Variantes de botón ===== */
+button.btn-secondary {
+  background: linear-gradient(to right, #10b981, #059669); /* verdes */
+}
+button.btn-danger {
+  background: linear-gradient(to right, #ef4444, #b91c1c); /* rojos */
+}
+
+/* ===== Botones en modales ===== */
+#live-camera-modal button,
+#cropper-container button {
+  margin-top: 12px;
+  margin-right: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+}
+#live-camera-modal button:nth-of-type(1),
+#cropper-container button:nth-of-type(1) {
+  background: linear-gradient(to right, #0078d4, #005fa3); /* primario */
+}
+#live-camera-modal button:nth-of-type(2),
+#cropper-container button:nth-of-type(2) {
+  background: linear-gradient(to right, #ef4444, #b91c1c); /* cancelar */
+}
+
+/* Contenedor interno del modal de cámara para centrar botones */
+#live-camera-modal {
+  padding: 20px;
+}
+#live-camera-modal > button {
+  align-self: center;
+}
+
+/* Botonera principal: más compacta en mobile */
+.button-group {
+  gap: 20px;
+}
+@media (min-width: 720px) {
+  .button-group {
+    gap: 50px;
+  }
+}
+
+/* Input IMSS: marcar error/foco opcionalmente */
+.input-group input.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 8px rgba(239,68,68,0.25);
+}

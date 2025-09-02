@@ -1,0 +1,268 @@
+/* Estilos base */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 15px 30px;
+  background-color: #000;
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.empresa {
+  font-size: 20px;
+  font-weight: bold;
+  color: #f7f7f7;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+#logout-btn {
+  background-color: #e81123;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#logout-btn:hover {
+  background-color: #a80000;
+}
+
+#profileBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #000;
+  color: #fa0000;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#profileBtn:hover {
+  background-color: #1a1a1a;
+  transform: scale(1.05);
+}
+
+/* Main */
+main {
+  padding: 20px;
+  text-align: center;
+  flex: 1;
+}
+
+h2 {
+  font-size: 24px;
+  margin-top: 0;
+}
+
+.start-question {
+  font-size: 18px;
+  margin: 20px 0;
+}
+
+/* Botones principales */
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 300px;
+  margin: 0 auto 60px;
+}
+
+.main-btn {
+  background-color: #000;
+  color: white;
+  border: none;
+  padding: 20px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.main-btn:hover {
+  background-color: #1a1a1a;
+  transform: scale(1.03);
+}
+
+/* Sección Cómo Funciona */
+.how-it-works {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  max-width: 700px;
+  margin: auto;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.how-it-works h3 {
+  margin-top: 0;
+  color: #0e1318;
+}
+
+.how-it-works ol {
+  padding-left: 20px;
+}
+
+/* Carrusel */
+.carrusel-container {
+  width: 100%;
+  overflow: hidden;
+  height: 121px;
+  position: relative;
+  margin-top: 40px;
+  margin-bottom: 0; /* Elimina espacio debajo del carrusel */
+}
+
+
+.carrusel-slide {
+  display: flex;
+  width: calc(1024px * 8);
+  animation: mover 40s linear infinite;
+}
+
+.carrusel-slide img {
+  width: 1024px;
+  height: 121px;
+  object-fit: cover;
+}
+
+@keyframes mover {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-4096px); }
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 40px;
+  font-size: 20px;
+  background-color: #000;
+  color: #fff;
+  margin-top: auto;
+  border-top: 1px solid #333;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.3);
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  padding-top: 80px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+  animation: fadeInModal 0.5s ease forwards;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-content {
+  background-color: white;
+  margin: auto;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.close {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Perfil */
+.profile-pic-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.profile-pic-container img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+#cameraBtn, #saveProfileBtn {
+  background-color: #000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#cameraBtn:hover, #saveProfileBtn:hover {
+  background-color: #3a78c2;
+}
+
+#fileInput, #nameInput {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Media Queries */
+@media (min-width: 600px) {
+  .btn-group {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-info {
+    margin-top: 10px;
+  }
+
+  .how-it-works {
+    text-align: left;
+  }
+}
