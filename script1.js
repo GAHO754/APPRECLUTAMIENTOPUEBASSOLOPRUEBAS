@@ -316,14 +316,17 @@ function openCrop(docName) {
 
     cropperImg.onload = () => {
         if (cropperImg.src) {
-            cropper = new Cropper(cropperImg, {
+                cropper = new Cropper(cropperImg, {
                 viewMode: 1,
                 autoCropArea: 0.8,
                 responsive: true,
                 background: false,
                 movable: true,
-                zoomable: true
-            });
+                zoomable: true,
+                dragMode: 'crop',                 // 🔹 evita “mover imagen completa” por accidente
+                toggleDragModeOnDblclick: false   // 🔹 no cambia de modo con doble toque
+                });
+
         }
     };
     cropperImg.src = imageSrc;
