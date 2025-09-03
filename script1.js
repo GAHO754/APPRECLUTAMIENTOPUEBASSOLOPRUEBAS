@@ -263,8 +263,8 @@ function processImageWithOpenCV(canvasElement, docName) {
             document.getElementById(`preview-${docName}`).style.display = 'block';
             document.getElementById(`status-${docName}`).textContent = '✅'; // Procesado automáticamente
         } else {
-            console.warn("No se pudo detectar un documento rectangular. Se guardará la imagen sin procesar.");
-            alert("No se detectó un documento claro. Se guardará la imagen completa. Puedes usar la opción 'Recortar (manual)' si es necesario.");
+            console.warn("Se guardará la imagen sin procesar.");
+            alert("No se detectó un documento claro. Puedes usar la opción 'Recortar (manual)' si es necesario.");
             // Calidad de la imagen original si no se puede procesar automáticamente
             const originalDataURL = canvasElement.toDataURL("image/jpeg", 1.0);
 
