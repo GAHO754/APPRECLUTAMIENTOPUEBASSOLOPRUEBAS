@@ -306,7 +306,7 @@ function openCrop(docName) {
   const cropperImg = document.getElementById("cropper-image");
   const modal = document.getElementById("cropper-modal");
   const container = document.getElementById('cropper-container');
-const strip = document.getElementById('cropper-scroll-strip');
+  const strip = document.getElementById('cropper-scroll-strip');
 
 modal.style.display = "flex";
 if (container) container.scrollTop = 0;   // asegura que el strip se vea
