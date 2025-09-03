@@ -296,47 +296,61 @@ function processImageWithOpenCV(canvasElement, docName) {
 }
 
 function openCrop(docName) {
-    const imageSrc = scannedImages[docName];
-    if (!imageSrc) {
-        alert("Primero escanea la imagen.");
-        return;
+  const imageSrc = scannedImages[docName]; // usa docName o docSlug según tu clave
+  if (!imageSrc) {
+    alert("Primero escanea la imagen.");
+    return;
+  }
+
+  currentDocForCrop = docName;
+  const cropperImg = document.getElementById("cropper-image");
+  const modal = document.getElementById("cropper-modal");
+  const container = document.getElementById('cropper-container');
+  const strip = document.getElementById('cropper-scroll-strip');
+
+  // Mostrar modal
+  modal.style.display = "flex";
+
+  // Asegura que la barrita (sticky) quede visible al abrir
+  if (container) container.scrollTop = 0;
+
+  // Evita acumular múltiples listeners si abres varias veces
+  if (strip && container) {
+    strip.addEventListener('click', () => {
+      container.scrollBy({ top: container.clientHeight * 0.8, behavior: 'smooth' });
+    }, { once: true });
+  }
+
+  // Resetear cropper previo si existía
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+
+  // Forzar onload limpio
+  cropperImg.src = "";
+  cropperImg.onload = () => {
+    if (cropperImg.src) {
+      cropper = new Cropper(cropperImg, {
+        viewMode: 1,
+        autoCropArea: 0.8,
+        responsive: true,
+        background: false,
+        movable: true,
+        zoomable: true,
+        dragMode: 'crop',               // evita mover la imagen completa por accidente
+        toggleDragModeOnDblclick: false // no cambia de modo con doble toque
+      });
     }
-
-    currentDocForCrop = docName;
-    const cropperImg = document.getElementById("cropper-image");
-
-    document.getElementById("cropper-modal").style.display = "flex";
-
-    if (cropper) {
-        cropper.destroy();
-        cropper = null;
-    }
-
-    cropperImg.src = ""; // Limpiar cualquier imagen previa para forzar el onload
-
-    cropperImg.onload = () => {
-        if (cropperImg.src) {
-                cropper = new Cropper(cropperImg, {
-                viewMode: 1,
-                autoCropArea: 0.8,
-                responsive: true,
-                background: false,
-                movable: true,
-                zoomable: true,
-                dragMode: 'crop',                 // 🔹 evita “mover imagen completa” por accidente
-                toggleDragModeOnDblclick: false   // 🔹 no cambia de modo con doble toque
-                });
-
-        }
-    };
-    cropperImg.src = imageSrc;
-
-    cropperImg.onerror = () => {
-        console.error("Error cargando la imagen para recortar:", imageSrc);
-        alert("Hubo un problema cargando la imagen para recortar.");
-        closeCrop();
-    };
+  };
+  cropperImg.onerror = () => {
+    console.error("Error cargando la imagen para recortar:", imageSrc);
+    alert("Hubo un problema cargando la imagen para recortar.");
+    closeCrop();
+  };
+  cropperImg.src = imageSrc;
 }
+
 
 function confirmCrop() {
     if (!cropper) {
