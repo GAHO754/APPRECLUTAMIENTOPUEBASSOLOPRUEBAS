@@ -306,20 +306,17 @@ function openCrop(docName) {
   const cropperImg = document.getElementById("cropper-image");
   const modal = document.getElementById("cropper-modal");
   const container = document.getElementById('cropper-container');
-  const strip = document.getElementById('cropper-scroll-strip');
+const strip = document.getElementById('cropper-scroll-strip');
 
-  // Mostrar modal
-  modal.style.display = "flex";
+modal.style.display = "flex";
+if (container) container.scrollTop = 0;   // asegura que el strip se vea
 
-  // Asegura que la barrita (sticky) quede visible al abrir
-  if (container) container.scrollTop = 0;
+if (strip && container) {
+  strip.addEventListener('click', () =>
+    container.scrollBy({ top: container.clientHeight * 0.8, behavior: 'smooth' })
+  , { once: true });
+}
 
-  // Evita acumular múltiples listeners si abres varias veces
-  if (strip && container) {
-    strip.addEventListener('click', () => {
-      container.scrollBy({ top: container.clientHeight * 0.8, behavior: 'smooth' });
-    }, { once: true });
-  }
 
   // Resetear cropper previo si existía
   if (cropper) {
