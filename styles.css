@@ -99,7 +99,8 @@ input[type="text"]:focus {
   -webkit-overflow-scrolling: touch;
   scrollbar-gutter: stable both-edges;
 
-  padding: 20px;
+  /* 🔧 Deja espacio a la derecha para la barra deslizadora personalizada */
+  padding: 20px 48px 20px 20px;   /* ← antes: 20px en los 4 lados */
   border-radius: 10px;
   background: #fff;
   display: flex;
@@ -123,8 +124,91 @@ input[type="text"]:focus {
   touch-action: none;
 }
 
+/* ================== Barra deslizadora personalizada (PANEADO VERTICAL) ================== */
+/* Pista fija al costado derecho del contenedor del recorte */
+.scroll-strip{
+  position: absolute;
+  top: 20px; 
+  right: 20px; 
+  bottom: 20px;
+  width: 16px;
+  background: #e5e7eb;                 /* track */
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  user-select: none;
+  touch-action: none;
+  display: grid;
+  place-items: start;
+  overflow: hidden;
+  transition: opacity .15s ease;
+  z-index: 2;                           /* por encima del canvas de Cropper */
+}
+.scroll-strip.hidden{
+  opacity: .35;                         /* se atenúa si no hace falta */
+  pointer-events: none;
+}
 
-/* ================== Scrollbar estilo clásico ================== */
+/* Pulgar que se arrastra (thumb) */
+.scroll-thumb{
+  width: 12px;
+  height: 60px;                         /* el JS lo ajusta dinámicamente */
+  margin: 2px;
+  border-radius: 8px;
+  background-image:
+    linear-gradient(#86b7ff, #4a9fff),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.35) 0,
+      rgba(255,255,255,.35) 2px,
+      rgba(255,255,255,0)   2px,
+      rgba(255,255,255,0)   6px
+    );
+  border: 1px solid #3a7bd5;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  transform: translateY(0);             /* la posición vertical la pone el JS */
+  will-change: transform, height;
+  cursor: grab;
+}
+.scroll-thumb:hover{
+  background-image:
+    linear-gradient(#78acff, #3f93ff),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.4) 0,
+      rgba(255,255,255,.4) 2px,
+      rgba(255,255,255,0)  2px,
+      rgba(255,255,255,0)  6px
+    );
+}
+.scroll-thumb:active{
+  cursor: grabbing;
+  background-image:
+    linear-gradient(#4a9fff, #2e7bd0),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.45) 0,
+      rgba(255,255,255,.45) 2px,
+      rgba(255,255,255,0)   2px,
+      rgba(255,255,255,0)   6px
+    );
+}
+
+/* Botones del modal (opcional, por estética) */
+#cropper-container button{
+  margin-top: 10px;
+  margin-right: 8px;
+  padding: .6rem .9rem;
+  border-radius: 10px;
+  border: 1px solid #dfe7e3;
+  background: #f7fbf8;
+  font-weight: 700;
+  cursor: pointer;
+}
+#cropper-container button:hover{
+  background: #eef6f0;
+}
+
+/* ================== Scrollbar estilo clásico (scroll real del contenedor) ================== */
 /* Chrome/Edge/Brave */
 #cropper-container::-webkit-scrollbar { width: 14px; }
 #cropper-container::-webkit-scrollbar-track {
