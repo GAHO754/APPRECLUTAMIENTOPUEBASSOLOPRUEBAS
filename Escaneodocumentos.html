@@ -32,12 +32,28 @@
     </div>
 
     <div id="cropper-modal">
-        <div id="cropper-container">
-            <img id="cropper-image" />
-            <button onclick="confirmCrop()">✅ Confirmar recorte</button>
-            <button onclick="closeCrop()">❌ Cancelar</button>
-        </div>
+  <div id="cropper-container">
+    <!-- Zona de recorte -->
+    <div class="crop-stage">
+      <img id="cropper-image" />
     </div>
+
+    <!-- Vista previa (aparece al fijar) -->
+    <div id="crop-preview-wrap" class="preview-wrap" aria-live="polite">
+      <h4>Vista previa</h4>
+      <img id="crop-preview" alt="Vista previa del recorte" />
+    </div>
+
+    <!-- Barra de acciones pegajosa -->
+    <div class="crop-actions">
+      <button id="btn-lock" class="btn" onclick="lockCrop()">🔒 Fijar recorte</button>
+      <button id="btn-unlock" class="btn hidden" onclick="unlockCrop()">✏️ Editar recorte</button>
+      <button class="btn btn-primary" onclick="confirmCrop()">✅ Confirmar</button>
+      <button class="btn btn-ghost" onclick="closeCrop()">❌ Cancelar</button>
+    </div>
+  </div>
+</div>
+
 
 
     <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
