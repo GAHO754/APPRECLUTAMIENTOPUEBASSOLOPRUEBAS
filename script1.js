@@ -296,44 +296,72 @@ function processImageWithOpenCV(canvasElement, docName) {
 }
 
 function openCrop(docName) {
-    const imageSrc = scannedImages[docName];
-    if (!imageSrc) {
-        alert("Primero escanea la imagen.");
-        return;
-    }
+  const imageSrc = scannedImages[docName];
+  if (!imageSrc) {
+    alert("Primero escanea la imagen.");
+    return;
+  }
 
-    currentDocForCrop = docName;
-    const cropperImg = document.getElementById("cropper-image");
+  currentDocForCrop = docName;
 
-    document.getElementById("cropper-modal").style.display = "flex";
+  const modal     = document.getElementById("cropper-modal");
+  const cropperImg = document.getElementById("cropper-image");
+  const container  = document.getElementById("cropper-container");
 
-    if (cropper) {
-        cropper.destroy();
-        cropper = null;
-    }
+  // Mostrar modal y llevar el scroll arriba
+  modal.style.display = "flex";
+  if (container) container.scrollTop = 0;
 
-    cropperImg.src = ""; // Limpiar cualquier imagen previa para forzar el onload
+  // Destruir instancia previa
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
 
-    cropperImg.onload = () => {
-        if (cropperImg.src) {
-            cropper = new Cropper(cropperImg, {
-                viewMode: 1,
-                autoCropArea: 0.8,
-                responsive: true,
-                background: false,
-                movable: true,
-                zoomable: true
-            });
-        }
-    };
-    cropperImg.src = imageSrc;
+  // Limpiar handlers previos y forzar onload "limpio"
+  cropperImg.onload = null;
+  cropperImg.onerror = null;
+  cropperImg.src = "";
 
-    cropperImg.onerror = () => {
-        console.error("Error cargando la imagen para recortar:", imageSrc);
-        alert("Hubo un problema cargando la imagen para recortar.");
-        closeCrop();
-    };
+  cropperImg.onload = () => {
+    if (!cropperImg.src) return;
+
+    // Permitir scroll vertical sobre la imagen (muy importante en móvil)
+    cropperImg.style.touchAction = "pan-y";
+
+    cropper = new Cropper(cropperImg, {
+      viewMode: 1,
+      autoCropArea: 0.85,
+      background: false,
+      responsive: true,
+
+      // ✅ Imagen fija: sin movimiento ni zoom
+      movable: false,
+      zoomable: false,
+      zoomOnWheel: false,
+      zoomOnTouch: false,
+      scalable: false,
+
+      // ✅ Evitar que un arrastre en la imagen cree/mueva el recorte
+      dragMode: "none",
+
+      // ✅ El recuadro no se arrastra completo; solo se redimensiona con manijas
+      cropBoxMovable: false,
+      cropBoxResizable: true,
+
+      toggleDragModeOnDblclick: false
+    });
+  };
+
+  cropperImg.onerror = () => {
+    console.error("Error cargando la imagen para recortar:", imageSrc);
+    alert("Hubo un problema cargando la imagen para recortar.");
+    closeCrop();
+  };
+
+  cropperImg.src = imageSrc;
 }
+
 
 function confirmCrop() {
     if (!cropper) {
