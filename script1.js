@@ -1,3 +1,7 @@
+// =============================================
+// script1.js — flujo original + barra deslizadora para recorte
+// =============================================
+
 const documents = [
     "Formato de alta", "Solicitud de empleo", "Copia del acta de nacimiento", "Número de IMSS", "CURP",
     "Copia de comprobante de estudios", "Copia de comprobante de domicilio", "Credencial de elector (Frente)",
@@ -13,21 +17,25 @@ let currentDocForCrop = null;
 let currentLiveDoc = null;
 let liveStream = null;
 let cv = null; // Variable para la instancia de OpenCV
-// script1.js
-const { jsPDF } = window.jspdf; // <--- PON ESTO AL INICIO
 
-// Esta función se llama cuando OpenCV.js ha terminado de cargar
+const { jsPDF } = window.jspdf; // Mantén esta desestructuración al inicio
+
+// =============================================
+// OpenCV listo
+// =============================================
 function onOpenCvReady() {
     cv = window.cv; // Asigna la instancia de OpenCV a la variable global 'cv'
     if (cv) {
         console.log("OpenCV.js está listo!");
-        // Aquí puedes realizar cualquier inicialización adicional que necesites de OpenCV
     } else {
         console.error("Error al cargar OpenCV.js");
         alert("Hubo un problema al cargar la librería de procesamiento de imágenes.");
     }
 }
 
+// =============================================
+// Cargar UI de documentos
+// =============================================
 window.onload = () => {
     const container = document.getElementById('document-container');
 
@@ -42,11 +50,10 @@ window.onload = () => {
     <span id="status-${docName}">❌</span><br>
     <img id="preview-${docName}" class="image-preview" style="display:none;">
 `;
-
         container.appendChild(div);
     });
 
-    // Crear contenedor flex para título + botón
+    // Crear contenedor flex para título + botón "Regresar"
     const header = document.createElement('div');
     header.id = 'header';
     header.style.display = 'flex';
@@ -54,15 +61,11 @@ window.onload = () => {
     header.style.gap = '10px';
     header.style.marginBottom = '20px';
 
-    // Buscar el título h1 en el DOM
     const title = document.querySelector('h1');
-
     if (title) {
-        // Mover el título dentro del nuevo contenedor
         title.parentNode.insertBefore(header, title);
         header.appendChild(title);
 
-        // Crear el botón regresar
         const backBtn = document.createElement('button');
         backBtn.textContent = '⬅️ Regresar';
         backBtn.style.padding = '15px 20px';
@@ -70,39 +73,37 @@ window.onload = () => {
         backBtn.onclick = () => {
             window.location.href = 'dashboard.html';
         };
-
-        // Agregar el botón al contenedor header, junto al título
         header.appendChild(backBtn);
     }
 };
 
+// =============================================
+// Cámara en vivo
+// =============================================
 function startLiveCamera(docName) {
     currentLiveDoc = docName;
 
-    navigator.mediaDevices.getUserMedia({ 
-        video: { 
+    navigator.mediaDevices.getUserMedia({
+        video: {
             facingMode: "environment",
             width: { ideal: 1920 },
             height: { ideal: 1080 }
         }
     })
-    .then((stream) => {
-        liveStream = stream;
-        document.getElementById("live-video").srcObject = stream;
-        document.getElementById("live-camera-modal").style.display = "flex";
-    })
-    .catch((error) => {
-        console.error("Error accediendo a la cámara:", error);
-        alert("No se pudo acceder a la cámara de este dispositivo. Asegúrate de dar permisos.");
-    });
+        .then((stream) => {
+            liveStream = stream;
+            document.getElementById("live-video").srcObject = stream;
+            document.getElementById("live-camera-modal").style.display = "flex";
+        })
+        .catch((error) => {
+            console.error("Error accediendo a la cámara:", error);
+            alert("No se pudo acceder a la cámara de este dispositivo. Asegúrate de dar permisos.");
+        });
 }
 
-
-//////////////////////////////////////////////////////////////////////////
 function takePhoto() {
     const video = document.getElementById("live-video");
     const canvas = document.createElement("canvas");
-    // Usa el tamaño real del video
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
@@ -123,7 +124,7 @@ function takePhoto() {
 
     processImageWithOpenCV(canvas, currentLiveDoc);
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
+
 function closeLiveCamera() {
     document.getElementById("live-camera-modal").style.display = "none";
     if (liveStream) {
@@ -132,10 +133,13 @@ function closeLiveCamera() {
     }
 }
 
+// =============================================
+// Procesamiento con OpenCV (detección documento + warp)
+// =============================================
 function processImageWithOpenCV(canvasElement, docName) {
     console.log("Iniciando procesamiento con OpenCV.js...");
 
-    let src = cv.imread(canvasElement); // Carga la imagen del canvas en una Mat de OpenCV
+    let src = cv.imread(canvasElement);
     let dst = new cv.Mat();
     let gray = new cv.Mat();
     let blurred = new cv.Mat();
@@ -144,33 +148,24 @@ function processImageWithOpenCV(canvasElement, docName) {
     let hierarchy = new cv.Mat();
 
     try {
-        // 1. Convertir a escala de grises
         cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
-
-        // 2. Aplicar un desenfoque para suavizar la imagen y reducir el ruido
         cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
+        cv.Canny(blurred, canny, 75, 200, 3, false);
 
-        // 3. Detección de bordes con Canny
-        cv.Canny(blurred, canny, 75, 200, 3, false); // Ajustar umbrales si es necesario
-
-        // 4. Encontrar contornos
         cv.findContours(canny, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
 
         let maxArea = 0;
         let bestContour = null;
 
-        // 5. Encontrar el contorno más grande que sea aproximadamente un rectángulo de 4 puntos
         for (let i = 0; i < contours.size(); ++i) {
             let contour = contours.get(i);
             let area = cv.contourArea(contour);
-            // Solo considerar contornos de un cierto tamaño mínimo para evitar ruido
             if (area < 1000) continue;
 
             let perimeter = cv.arcLength(contour, true);
             let approx = new cv.Mat();
             cv.approxPolyDP(contour, approx, 0.02 * perimeter, true);
 
-            // Si el contorno tiene 4 puntos
             if (approx.rows === 4) {
                 if (area > maxArea) {
                     maxArea = area;
@@ -181,39 +176,34 @@ function processImageWithOpenCV(canvasElement, docName) {
         }
 
         if (bestContour) {
-            // 6. Preparar los puntos de origen para la transformación de perspectiva
             let points = [];
             for (let i = 0; i < bestContour.rows; ++i) {
                 points.push({ x: bestContour.data32S[i * 2], y: bestContour.data32S[i * 2 + 1] });
             }
 
-            // Función auxiliar para ordenar los 4 puntos (superior-izq, superior-der, inferio-der, inferior-izq)
             function orderPoints(pts) {
                 let rect = new Array(4);
                 let s = pts.map(p => p.x + p.y);
                 let diff = pts.map(p => p.y - p.x);
 
-                rect[0] = pts[s.indexOf(Math.min(...s))]; // Top-left
-                rect[2] = pts[s.indexOf(Math.max(...s))]; // Bottom-right
-                rect[1] = pts[diff.indexOf(Math.min(...diff))]; // Top-right
-                rect[3] = pts[diff.indexOf(Math.max(...diff))]; // Bottom-left
-
+                rect[0] = pts[s.indexOf(Math.min(...s))]; // TL
+                rect[2] = pts[s.indexOf(Math.max(...s))]; // BR
+                rect[1] = pts[diff.indexOf(Math.min(...diff))]; // TR
+                rect[3] = pts[diff.indexOf(Math.max(...diff))]; // BL
                 return rect;
             }
 
             let orderedPts = orderPoints(points);
             let [tl, tr, br, bl] = orderedPts;
 
-            // Calcular el ancho y alto del nuevo documento "aplanado"
-            let widthA = Math.sqrt(Math.pow(br.x - bl.x, 2) + Math.pow(br.y - bl.y, 2));
-            let widthB = Math.sqrt(Math.pow(tr.x - tl.x, 2) + Math.pow(tr.y - tl.y, 2));
+            let widthA = Math.hypot(br.x - bl.x, br.y - bl.y);
+            let widthB = Math.hypot(tr.x - tl.x, tr.y - tl.y);
             let maxWidth = Math.max(parseInt(widthA), parseInt(widthB));
 
-            let heightA = Math.sqrt(Math.pow(tr.x - br.x, 2) + Math.pow(tr.y - br.y, 2));
-            let heightB = Math.sqrt(Math.pow(tl.x - bl.x, 2) + Math.pow(tl.y - bl.y, 2));
+            let heightA = Math.hypot(tr.x - br.x, tr.y - br.y);
+            let heightB = Math.hypot(tl.x - bl.x, tl.y - bl.y);
             let maxHeight = Math.max(parseInt(heightA), parseInt(heightB));
 
-            // Puntos de destino para la transformación (un rectángulo perfecto)
             let destCoords = cv.matFromArray(4, 1, cv.CV_32FC2, [
                 0, 0,
                 maxWidth - 1, 0,
@@ -227,64 +217,54 @@ function processImageWithOpenCV(canvasElement, docName) {
                 bl.x, bl.y
             ]);
 
-            // 7. Realizar la transformación de perspectiva
             let M = cv.getPerspectiveTransform(srcCoords, destCoords);
             let dsize = new cv.Size(maxWidth, maxHeight);
             cv.warpPerspective(src, dst, M, dsize, cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
 
-            // Limpieza de memoria
             srcCoords.delete();
             destCoords.delete();
             M.delete();
             bestContour.delete();
 
-            // 8. Opcional: Aplicar binarización si es el Contrato laboral para mejorar legibilidad de texto pequeño
             const finalCanvas = document.createElement('canvas');
             if (docName === "Contrato laboral") {
                 let tempGrayForBinarization = new cv.Mat();
                 let binarizedMat = new cv.Mat();
-                // Convertir 'dst' a escala de grises si no lo está ya, para la binarización
                 cv.cvtColor(dst, tempGrayForBinarization, cv.COLOR_RGBA2GRAY, 0);
-                // Aplicar Otsu's thresholding (binarización automática)
                 cv.threshold(tempGrayForBinarization, binarizedMat, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU);
-                cv.imshow(finalCanvas, binarizedMat); // Dibuja la Mat binarizada
+                cv.imshow(finalCanvas, binarizedMat);
                 tempGrayForBinarization.delete();
                 binarizedMat.delete();
             } else {
-                cv.imshow(finalCanvas, dst); // Para otros documentos, solo muestra la imagen recortada
+                cv.imshow(finalCanvas, dst);
             }
 
-            // Calidad JPEG: 1.0 para Contrato laboral, 0.7 para los demás
             const processedDataURL = finalCanvas.toDataURL("image/jpeg", 1.0);
-
 
             scannedImages[docName] = processedDataURL;
             document.getElementById(`preview-${docName}`).src = processedDataURL;
             document.getElementById(`preview-${docName}`).style.display = 'block';
-            document.getElementById(`status-${docName}`).textContent = '✅'; // Procesado automáticamente
+            document.getElementById(`status-${docName}`).textContent = '✅';
         } else {
             console.warn("Se guardará la imagen sin procesar.");
             alert("No se detectó un documento claro. Puedes usar la opción 'Recortar (manual)' si es necesario.");
-            // Calidad de la imagen original si no se puede procesar automáticamente
             const originalDataURL = canvasElement.toDataURL("image/jpeg", 1.0);
 
             scannedImages[docName] = originalDataURL;
             document.getElementById(`preview-${docName}`).src = originalDataURL;
             document.getElementById(`preview-${docName}`).style.display = 'block';
-            document.getElementById(`status-${docName}`).textContent = '⚠️'; // Indicador de que no se pudo procesar automáticamente
+            document.getElementById(`status-${docName}`).textContent = '⚠️';
         }
 
     } catch (err) {
         console.error("Error durante el procesamiento OpenCV:", err);
         alert("Ocurrió un error al procesar la imagen automáticamente.");
-        // En caso de error, guarda la imagen original para que el usuario pueda intentar el recorte manual
         const originalDataURL = canvasElement.toDataURL("image/jpeg", currentLiveDoc === "Contrato laboral" ? 1.0 : 0.7);
         scannedImages[docName] = originalDataURL;
         document.getElementById(`preview-${docName}`).src = originalDataURL;
         document.getElementById(`preview-${docName}`).style.display = 'block';
         document.getElementById(`status-${docName}`).textContent = '❌';
     } finally {
-        // Asegúrate de liberar la memoria de las Mats de OpenCV
         src.delete();
         dst.delete();
         gray.delete();
@@ -295,59 +275,163 @@ function processImageWithOpenCV(canvasElement, docName) {
     }
 }
 
-function openCrop(docName) {
-  const imageSrc = scannedImages[docName]; // usa docName o docSlug según tu clave
-  if (!imageSrc) {
-    alert("Primero escanea la imagen.");
-    return;
-  }
+// =============================================
+// Barra deslizadora para panear la imagen del cropper sin tocarla
+// =============================================
+// Usa: attachScrollStrip(cropperInstance);
+function attachScrollStrip(cropper) {
+    const strip = document.getElementById('cropper-scroll-strip');
+    const thumb = document.getElementById('scroll-thumb');
+    const imgEl = document.getElementById('cropper-image');
 
-  currentDocForCrop = docName;
-  const cropperImg = document.getElementById("cropper-image");
-  const modal = document.getElementById("cropper-modal");
-  const container = document.getElementById('cropper-container');
-  const strip = document.getElementById('cropper-scroll-strip');
+    if (!strip || !thumb || !cropper) return;
 
-modal.style.display = "flex";
-if (container) container.scrollTop = 0;   // asegura que el strip se vea
-
-if (strip && container) {
-  strip.addEventListener('click', () =>
-    container.scrollBy({ top: container.clientHeight * 0.8, behavior: 'smooth' })
-  , { once: true });
-}
-
-
-  // Resetear cropper previo si existía
-  if (cropper) {
-    cropper.destroy();
-    cropper = null;
-  }
-
-  // Forzar onload limpio
-  cropperImg.src = "";
-  cropperImg.onload = () => {
-    if (cropperImg.src) {
-      cropper = new Cropper(cropperImg, {
-        viewMode: 1,
-        autoCropArea: 0.8,
-        responsive: true,
-        background: false,
-        movable: true,
-        zoomable: true,
-        dragMode: 'crop',               // evita mover la imagen completa por accidente
-        toggleDragModeOnDblclick: false // no cambia de modo con doble toque
-      });
+    function ranges() {
+        const ctn = cropper.getContainerData();
+        const cvs = cropper.getCanvasData();
+        const maxTop = 0;
+        const minTop = Math.min(0, ctn.height - cvs.height);
+        return { ctn, cvs, minTop, maxTop };
     }
-  };
-  cropperImg.onerror = () => {
-    console.error("Error cargando la imagen para recortar:", imageSrc);
-    alert("Hubo un problema cargando la imagen para recortar.");
-    closeCrop();
-  };
-  cropperImg.src = imageSrc;
+
+    function setTop(newTop) {
+        const { cvs, minTop, maxTop } = ranges();
+        const top = Math.max(minTop, Math.min(maxTop, newTop));
+        cropper.setCanvasData({ ...cvs, top });
+        updateThumb();
+    }
+
+    function yToTop(y) {
+        const { ctn, cvs, minTop, maxTop } = ranges();
+        const stripRect = strip.getBoundingClientRect();
+        const usable = stripRect.height - thumb.offsetHeight;
+        if (usable <= 0 || cvs.height <= ctn.height) return cvs.top;
+        const t = (y - thumb.offsetHeight / 2) / usable; // 0..1
+        return minTop + (1 - t) * (maxTop - minTop);
+    }
+
+    function topToY() {
+        const { ctn, cvs, minTop, maxTop } = ranges();
+        const stripRect = strip.getBoundingClientRect();
+        const usable = stripRect.height - thumb.offsetHeight;
+        if (usable <= 0 || cvs.height <= ctn.height) return 0;
+        const t = (cvs.top - minTop) / (maxTop - minTop); // 0..1
+        return (1 - t) * usable;
+    }
+
+    function updateThumb() {
+        const { ctn, cvs } = ranges();
+        if (cvs.height <= ctn.height + 1) {
+            strip.classList.add('hidden');
+            return;
+        }
+        strip.classList.remove('hidden');
+
+        const ratio = ctn.height / cvs.height;
+        const minThumb = 36;
+        const h = Math.max(minThumb, Math.round(ratio * (strip.clientHeight - 4)));
+        thumb.style.height = h + 'px';
+
+        const y = topToY();
+        thumb.style.transform = `translateY(${Math.max(2, y + 2)}px)`;
+    }
+
+    let dragging = false;
+
+    const onPointerDown = (e) => {
+        dragging = true;
+        strip.setPointerCapture(e.pointerId);
+        moveToEvent(e);
+    };
+    const onPointerMove = (e) => {
+        if (!dragging) return;
+        moveToEvent(e);
+    };
+    const onPointerUp = () => { dragging = false; };
+
+    function moveToEvent(e) {
+        const rect = strip.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        const top = yToTop(y);
+        setTop(top);
+    }
+
+    strip.addEventListener('pointerdown', onPointerDown);
+    strip.addEventListener('pointermove', onPointerMove);
+    strip.addEventListener('pointerup', onPointerUp);
+    strip.addEventListener('pointercancel', onPointerUp);
+
+    strip.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const { cvs } = ranges();
+        setTop(cvs.top - e.deltaY);
+    }, { passive: false });
+
+    imgEl.addEventListener('ready', updateThumb);
+    imgEl.addEventListener('zoom', updateThumb);
+    imgEl.addEventListener('crop', updateThumb);
+    imgEl.addEventListener('cropend', updateThumb);
+
+    new ResizeObserver(updateThumb).observe(document.getElementById('cropper-container'));
+
+    setTimeout(updateThumb, 60);
 }
 
+// =============================================
+// Modal de recorte manual con Cropper.js
+// =============================================
+function openCrop(docName) {
+    const imageSrc = scannedImages[docName];
+    if (!imageSrc) {
+        alert("Primero escanea la imagen.");
+        return;
+    }
+
+    currentDocForCrop = docName;
+    const cropperImg = document.getElementById("cropper-image");
+    const modal = document.getElementById("cropper-modal");
+    const container = document.getElementById('cropper-container');
+    const strip = document.getElementById('cropper-scroll-strip');
+
+    modal.style.display = "flex";
+    if (container) container.scrollTop = 0;
+
+    if (strip && container) {
+        strip.addEventListener('click', () =>
+            container.scrollBy({ top: container.clientHeight * 0.8, behavior: 'smooth' })
+            , { once: true });
+    }
+
+    // Resetear cropper previo si existía
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+
+    cropperImg.src = "";
+    cropperImg.onload = () => {
+        if (cropperImg.src) {
+            cropper = new Cropper(cropperImg, {
+                viewMode: 1,
+                autoCropArea: 0.8,
+                responsive: true,
+                background: false,
+                movable: true,
+                zoomable: true,
+                dragMode: 'crop',
+                toggleDragModeOnDblclick: false
+            });
+            // 🔗 Conectar barra deslizadora personalizada al cropper
+            attachScrollStrip(cropper);
+        }
+    };
+    cropperImg.onerror = () => {
+        console.error("Error cargando la imagen para recortar:", imageSrc);
+        alert("Hubo un problema cargando la imagen para recortar.");
+        closeCrop();
+    };
+    cropperImg.src = imageSrc;
+}
 
 function confirmCrop() {
     if (!cropper) {
@@ -356,27 +440,20 @@ function confirmCrop() {
     }
 
     const canvas = cropper.getCroppedCanvas();
-
     if (!canvas) {
         alert("No se pudo obtener el área recortada.");
         return;
     }
 
-    // ✅ Guardar imagen recortada con calidad máxima (sin redimensionar)
     const croppedDataUrl = canvas.toDataURL("image/jpeg", 1.0);
-    
-    // ✅ Guardar en el objeto global
     scannedImages[currentDocForCrop] = croppedDataUrl;
 
-    // ✅ Mostrar la vista previa recortada
     document.getElementById(`preview-${currentDocForCrop}`).src = croppedDataUrl;
     document.getElementById(`preview-${currentDocForCrop}`).style.display = 'block';
     document.getElementById(`status-${currentDocForCrop}`).textContent = '🟩';
 
-    // ✅ Cerrar el modal de recorte
     closeCrop();
 }
-
 
 function closeCrop() {
     if (cropper) {
@@ -385,7 +462,10 @@ function closeCrop() {
     }
     document.getElementById("cropper-modal").style.display = "none";
 }
-/////////////////////////////////zip////////////////////////////////////////////
+
+// =============================================
+// ZIP por documento (PDF por archivo)
+// =============================================
 async function generateZip() {
     const imss = document.getElementById('input-imss').value.trim();
     if (!imss) {
@@ -396,7 +476,6 @@ async function generateZip() {
     const fecha = getCurrentDateFormatted();
     const zip = new JSZip();
     const pdfPromises = [];
-
     let index = 1;
 
     for (const [docName, imageData] of Object.entries(scannedImages)) {
@@ -412,7 +491,6 @@ async function generateZip() {
                 const pageWidth = pdf.internal.pageSize.getWidth();
                 const pageHeight = pdf.internal.pageSize.getHeight();
 
-                // Ajuste para mantener proporciones
                 let imgWidth = img.width;
                 let imgHeight = img.height;
                 const scale = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
@@ -424,8 +502,7 @@ async function generateZip() {
                 const y = (pageHeight - imgHeight) / 2;
 
                 pdf.addImage(img, 'JPEG', x, y, imgWidth, imgHeight);
-                pdfOutput = pdf.output('blob');
-
+                pdfOutput = pdf.output('blob'); // (queda global como en tu flujo)
                 zip.file(`${imss}_${fecha}_${index++}_${docName}.pdf`, pdfOutput);
                 resolve();
             };
@@ -435,12 +512,9 @@ async function generateZip() {
         pdfPromises.push(promise);
     }
 
-    // Espera a que todos los PDFs se hayan generado
     await Promise.all(pdfPromises);
 
-    // Ahora genera el ZIP final
     const blob = await zip.generateAsync({ type: 'blob' });
-
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -451,8 +525,9 @@ async function generateZip() {
     URL.revokeObjectURL(url);
 }
 
-
-//////////////////////////////////////////pdf////////////////////////////////////////////
+// =============================================
+// PDF único con todas las imágenes
+// =============================================
 async function generateOptimizedPDF() {
     const { jsPDF } = window.jspdf;
     const imss = document.getElementById('input-imss').value.trim();
@@ -467,7 +542,6 @@ async function generateOptimizedPDF() {
     const entries = Object.entries(scannedImages);
     for (let i = 0; i < entries.length; i++) {
         const [docName, imageData] = entries[i];
-
         const imgProps = pdf.getImageProperties(imageData);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
@@ -487,7 +561,9 @@ async function generateOptimizedPDF() {
     URL.revokeObjectURL(url);
 }
 
-////////////////////////////////////////////////////////////////
+// =============================================
+// Utilidades varias
+// =============================================
 function compressImage(dataURL, quality) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -504,8 +580,6 @@ function compressImage(dataURL, quality) {
     });
 }
 
-
-// Función auxiliar para obtener fecha formateada
 function getCurrentDateFormatted() {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
@@ -514,27 +588,13 @@ function getCurrentDateFormatted() {
     return `${dd}-${mm}-${yyyy}`;
 }
 
-
-cropperImg.onload = null;
-cropperImg.src = "";
-setTimeout(() => {
-    cropperImg.src = imageSrc;
-    cropperImg.onload = () => {
-        cropper = new Cropper(cropperImg, {
-            viewMode: 1,
-            autoCropArea: 0.8,
-            responsive: true,
-            background: false,
-            movable: true,
-            zoomable: true
-        });
-    };
-}, 50);
-////////////////////////////////////////////////////////////////////funcion nueva 
+// =============================================
+// Descargar PDF por documento
+// =============================================
 function downloadPDF(docName) {
     const imageData = scannedImages[docName];
     const imss = document.getElementById('input-imss').value.trim();
-    
+
     if (!imageData) {
         alert(`Debes escanear el documento "${docName}" primero.`);
         return;
