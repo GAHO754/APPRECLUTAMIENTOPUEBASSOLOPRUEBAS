@@ -29,19 +29,20 @@
         <button onclick="closeLiveCamera()">❌ Cancelar</button>
     </div>
 
-    <div id="cropper-modal">
-        <div id="cropper-container">
-  <img id="cropper-image" />
+    <<div id="cropper-modal">
+  <div id="cropper-container">
+    <img id="cropper-image" />
 
-  <!-- ✨ Barra deslizable para hacer scroll sin tocar la imagen -->
-  <div id="cropper-scroll-strip" class="scroll-strip" aria-label="Desliza aquí para bajar/subir">
-   
-  </div>
-
-  <button onclick="confirmCrop()">✅ Confirmar recorte</button>
-  <button onclick="closeCrop()">❌ Cancelar</button>
-</div>
+    <!-- ✨ Barra deslizadora personalizada -->
+    <div id="cropper-scroll-strip" class="scroll-strip" aria-label="Desliza aquí para bajar/subir">
+      <div class="scroll-thumb" id="scroll-thumb"></div>
     </div>
+
+    <button onclick="confirmCrop()">✅ Confirmar recorte</button>
+    <button onclick="closeCrop()">❌ Cancelar</button>
+  </div>
+</div>
+
 
     <script async src="https://docs.opencv.org/4.x/opencv.js" onload="onOpenCvReady();"></script>
     <script src="https://cdn.jsdelivr.net/npm/jszip"></script>
