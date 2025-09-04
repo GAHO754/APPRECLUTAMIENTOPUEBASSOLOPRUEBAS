@@ -95,7 +95,7 @@ input[type="text"]:focus {
 #cropper-container{
   position: relative;
   height: 90vh;                   /* altura fija para que aparezca scroll */
-  overflow-y: scroll;             /* fuerza barra visible si hay overflow */
+  overflow-y: auto;               /* scroll dentro del modal */
   -webkit-overflow-scrolling: touch;
   scrollbar-gutter: stable both-edges;
 
@@ -107,7 +107,7 @@ input[type="text"]:focus {
   align-items: center;
 }
 
-/* Wrapper que crea Cropper.js: no tapar la barrita */
+/* Wrapper que crea Cropper.js: no tapar la barra */
 #cropper-container > .cropper-container{
   position: relative;
   z-index: 1;
@@ -156,58 +156,54 @@ input[type="text"]:focus {
   font-weight: 700;
 }
 
-/* ================== Scrollbar estilo Windows clásico ================== */
-/* WebKit (Chrome/Edge/Brave/Opera) */
-#cropper-container::-webkit-scrollbar{
-  width: 16px;                  /* grosor */
-}
-#cropper-container::-webkit-scrollbar-track{
-  background: #f3f4f6;          /* pista gris */
+/* ================== Scrollbar estilo clásico ================== */
+/* Chrome/Edge/Brave */
+#cropper-container::-webkit-scrollbar { width: 14px; }
+#cropper-container::-webkit-scrollbar-track {
+  background: #e5e7eb;
   border-left: 1px solid #cbd5e1;
 }
-#cropper-container::-webkit-scrollbar-thumb{
-  background-color: #7a7a7a;    /* thumb gris */
-  border: 1px solid #5d5d5d;
-  border-radius: 4px;
-  /* ranuras horizontales */
+#cropper-container::-webkit-scrollbar-thumb {
+  border: 1px solid #3a7bd5;
+  border-radius: 8px;
   background-image:
+    linear-gradient(#86b7ff, #4a9fff),
     repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,.45) 0px,
+      rgba(255,255,255,.35) 0,
+      rgba(255,255,255,.35) 2px,
+      rgba(255,255,255,0)   2px,
+      rgba(255,255,255,0)   6px
+    );
+}
+#cropper-container::-webkit-scrollbar-thumb:hover {
+  background-image:
+    linear-gradient(#78acff, #3f93ff),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.4) 0,
+      rgba(255,255,255,.4) 2px,
+      rgba(255,255,255,0)  2px,
+      rgba(255,255,255,0)  6px
+    );
+}
+#cropper-container::-webkit-scrollbar-thumb:active {
+  background-image:
+    linear-gradient(#4a9fff, #2e7bd0),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.45) 0,
       rgba(255,255,255,.45) 2px,
       rgba(255,255,255,0)   2px,
       rgba(255,255,255,0)   6px
     );
 }
-#cropper-container::-webkit-scrollbar-thumb:hover{ background-color:#6b6b6b; }
-#cropper-container::-webkit-scrollbar-thumb:active{ background-color:#595959; }
+#cropper-container::-webkit-scrollbar-corner { background: #e5e7eb; }
 
-/* Flechas ↑ y ↓ */
-#cropper-container::-webkit-scrollbar-button:single-button{
-  display: block;
-  height: 16px;
-  background-color: #e5e7eb;
-  border: 1px solid #cbd5e1;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 8px 8px;
-}
-#cropper-container::-webkit-scrollbar-button:single-button:hover{ background-color:#d8dde4; }
-#cropper-container::-webkit-scrollbar-button:single-button:active{ background-color:#cfd5dc; }
-
-#cropper-container::-webkit-scrollbar-button:single-button:vertical:decrement{
-  /* flecha hacia arriba */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><path d='M4 2 L7 6 H1 Z' fill='%236b7280'/></svg>");
-}
-#cropper-container::-webkit-scrollbar-button:single-button:vertical:increment{
-  /* flecha hacia abajo */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><path d='M1 2 L7 2 L4 6 Z' fill='%236b7280'/></svg>");
-}
-
-/* Firefox (no soporta flechas personalizadas) */
+/* Firefox */
 #cropper-container{
-  scrollbar-width: auto;                 /* 'thin' si la prefieres más delgada */
-  scrollbar-color: #7a7a7a #f3f4f6;      /* thumb | track */
+  scrollbar-width: auto;               /* thin | auto */
+  scrollbar-color: #4a9fff #e5e7eb;    /* thumb | track */
 }
 
 /* Mejora visual del cuadro de recorte (mismas funciones) */
