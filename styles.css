@@ -196,3 +196,80 @@ footer {
   box-shadow: 0 0 8px rgba(0,120,212,0.3);
   outline: none;
 }
+
+
+/**css cpara la parte del recorte */
+/* ---------- Zona de recorte y barra de acciones ---------- */
+#cropper-container { position: relative; }
+.crop-stage { display:grid; place-items:center; }
+
+/* Botonera pegajosa al fondo del modal */
+.crop-actions{
+  position: sticky;
+  bottom: 0;
+  display:flex;
+  gap:.6rem;
+  justify-content:center;
+  padding:.7rem .9rem;
+  border-top:1px solid #e5e7eb;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(8px);
+  z-index: 5;
+}
+
+.btn{
+  padding:.6rem .9rem;
+  border-radius:10px;
+  border:1px solid #dfe7e3;
+  background:#f7fbf8;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn:hover{ background:#eef6f0; }
+.btn-primary{
+  background: linear-gradient(90deg,#2563eb,#1d4ed8);
+  color:#fff; border-color:#1d4ed8;
+}
+.btn-ghost{
+  background:transparent; color:#111827; border-color:#d1d5db;
+}
+.hidden{ display:none !important; }
+
+/* Vista previa del recorte (se muestra al fijar) */
+.preview-wrap{
+  display:none;
+  margin: 12px auto 8px;
+  text-align:center;
+}
+.preview-wrap.show{ display:block; }
+#crop-preview{
+  max-width: min(520px, 92%);
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  box-shadow:0 4px 14px rgba(0,0,0,.12);
+}
+
+/* ---------- Mejora visual del cuadro de recorte ---------- */
+.cropper-view-box{
+  outline: 2px solid #2563eb !important; /* azul */
+  box-shadow: 0 0 0 9999px rgba(0,0,0,.50) !important; /* máscara */
+  border-radius: 10px !important;
+}
+.cropper-line{ background-color:#2563eb !important; opacity:.95 !important; }
+.cropper-point{
+  width:12px !important; height:12px !important;
+  border-radius:50% !important;
+  background:#fff !important; border:2px solid #2563eb !important; opacity:1 !important;
+}
+.cropper-dashed{ border-color:rgba(37,99,235,.35) !important; }
+.cropper-face{ background:transparent !important; }
+
+/* Asegura que la imagen no invada la botonera */
+#cropper-image{
+  max-width: 100%;
+  max-height: 70vh;  /* deja espacio para la barra */
+  display:block;
+  margin:auto;
+  cursor: crosshair;
+  touch-action: none;
+}
