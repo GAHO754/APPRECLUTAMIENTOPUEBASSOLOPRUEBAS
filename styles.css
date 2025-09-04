@@ -1,4 +1,4 @@
-/* ================== Estilo general ================== */
+/* Estilo general */
 body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(to bottom, #f4f4f4, #e0e0e0);
@@ -17,13 +17,17 @@ h1 {
   text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
   animation: fadeInDown 1s ease-out;
 }
+
 @keyframes fadeInDown {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 /* Contenedor de documentos */
-#document-container { margin-top: 20px; }
+#document-container {
+  margin-top: 20px;
+}
+
 .document-box {
   margin-bottom: 20px;
   padding: 15px;
@@ -32,7 +36,11 @@ h1 {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   transition: transform 0.3s ease;
 }
-.document-box:hover { transform: translateY(-5px); }
+
+.document-box:hover {
+  transform: translateY(-5px);
+}
+
 .image-preview {
   max-width: 100%;
   margin-top: 10px;
@@ -43,12 +51,14 @@ h1 {
 /* Botones */
 .button-group {
   margin-top: 30px;
-  margin-bottom: 20px;
+  margin-bottom: 20px; /* espacio extra antes del footer */
   display: flex;
   gap: 50px;
   justify-content: center;
   flex-wrap: wrap;
 }
+
+
 button {
   padding: 10px 18px;
   border: none;
@@ -59,6 +69,7 @@ button {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
+
 button:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -73,16 +84,19 @@ input[type="text"] {
   font-size: 1rem;
   transition: box-shadow 0.3s ease;
 }
+
 input[type="text"]:focus {
   box-shadow: 0 0 5px #0078d4;
   outline: none;
 }
 
-/* ================== Modal de recorte ================== */
+/* Modal de recorte */
 #cropper-modal {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0,0,0,0.85);
   display: none;
   justify-content: center;
@@ -91,185 +105,32 @@ input[type="text"]:focus {
   animation: fadeInModal 0.5s ease forwards;
 }
 
-/* Contenedor interno del modal (scroll real) */
-#cropper-container{
-  position: relative;
-  height: 90vh;                   /* altura fija para que aparezca scroll */
-  overflow-y: auto;               /* scroll dentro del modal */
-  -webkit-overflow-scrolling: touch;
-  scrollbar-gutter: stable both-edges;
-
-  /* 🔧 Deja espacio a la derecha para la barra deslizadora personalizada */
-  padding: 20px 48px 20px 20px;   /* ← antes: 20px en los 4 lados */
-  border-radius: 10px;
+#cropper-container {
   background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 90vw;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Wrapper que crea Cropper.js: no tapar la barra */
-#cropper-container > .cropper-container{
-  position: relative;
-  z-index: 1;
-}
-
-/* Evita que el gesto vertical en la imagen robe el scroll del contenedor */
-#cropper-image { 
+#cropper-image {
   max-width: 100%;
   max-height: 70vh;
   display: block;
   margin: auto;
   cursor: crosshair;
-  touch-action: none;
 }
 
-/* ================== Barra deslizadora personalizada (PANEADO VERTICAL) ================== */
-/* Pista fija al costado derecho del contenedor del recorte */
-.scroll-strip{
-  position: absolute;
-  top: 20px; 
-  right: 20px; 
-  bottom: 20px;
-  width: 16px;
-  background: #e5e7eb;                 /* track */
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  user-select: none;
-  touch-action: none;
-  display: grid;
-  place-items: start;
-  overflow: hidden;
-  transition: opacity .15s ease;
-  z-index: 2;                           /* por encima del canvas de Cropper */
-}
-.scroll-strip.hidden{
-  opacity: .35;                         /* se atenúa si no hace falta */
-  pointer-events: none;
-}
-
-/* Pulgar que se arrastra (thumb) */
-.scroll-thumb{
-  width: 12px;
-  height: 60px;                         /* el JS lo ajusta dinámicamente */
-  margin: 2px;
-  border-radius: 8px;
-  background-image:
-    linear-gradient(#86b7ff, #4a9fff),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,.35) 0,
-      rgba(255,255,255,.35) 2px,
-      rgba(255,255,255,0)   2px,
-      rgba(255,255,255,0)   6px
-    );
-  border: 1px solid #3a7bd5;
-  box-shadow: 0 2px 6px rgba(0,0,0,.15);
-  transform: translateY(0);             /* la posición vertical la pone el JS */
-  will-change: transform, height;
-  cursor: grab;
-}
-.scroll-thumb:hover{
-  background-image:
-    linear-gradient(#78acff, #3f93ff),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,.4) 0,
-      rgba(255,255,255,.4) 2px,
-      rgba(255,255,255,0)  2px,
-      rgba(255,255,255,0)  6px
-    );
-}
-.scroll-thumb:active{
-  cursor: grabbing;
-  background-image:
-    linear-gradient(#4a9fff, #2e7bd0),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,.45) 0,
-      rgba(255,255,255,.45) 2px,
-      rgba(255,255,255,0)   2px,
-      rgba(255,255,255,0)   6px
-    );
-}
-
-/* Botones del modal (opcional, por estética) */
-#cropper-container button{
-  margin-top: 10px;
-  margin-right: 8px;
-  padding: .6rem .9rem;
-  border-radius: 10px;
-  border: 1px solid #dfe7e3;
-  background: #f7fbf8;
-  font-weight: 700;
-  cursor: pointer;
-}
-#cropper-container button:hover{
-  background: #eef6f0;
-}
-
-/* ================== Scrollbar estilo clásico (scroll real del contenedor) ================== */
-/* Chrome/Edge/Brave */
-#cropper-container::-webkit-scrollbar { width: 14px; }
-#cropper-container::-webkit-scrollbar-track {
-  background: #e5e7eb;
-  border-left: 1px solid #cbd5e1;
-}
-#cropper-container::-webkit-scrollbar-thumb {
-  border: 1px solid #3a7bd5;
-  border-radius: 8px;
-  background-image:
-    linear-gradient(#86b7ff, #4a9fff),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,.35) 0,
-      rgba(255,255,255,.35) 2px,
-      rgba(255,255,255,0)   2px,
-      rgba(255,255,255,0)   6px
-    );
-}
-#cropper-container::-webkit-scrollbar-thumb:hover {
-  background-image:
-    linear-gradient(#78acff, #3f93ff),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,.4) 0,
-      rgba(255,255,255,.4) 2px,
-      rgba(255,255,255,0)  2px,
-      rgba(255,255,255,0)  6px
-    );
-}
-#cropper-container::-webkit-scrollbar-thumb:active {
-  background-image:
-    linear-gradient(#4a9fff, #2e7bd0),
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,.45) 0,
-      rgba(255,255,255,.45) 2px,
-      rgba(255,255,255,0)   2px,
-      rgba(255,255,255,0)   6px
-    );
-}
-#cropper-container::-webkit-scrollbar-corner { background: #e5e7eb; }
-
-/* Firefox */
-#cropper-container{
-  scrollbar-width: auto;               /* thin | auto */
-  scrollbar-color: #4a9fff #e5e7eb;    /* thumb | track */
-}
-
-/* Mejora visual del cuadro de recorte (mismas funciones) */
-.cropper-view-box{ outline:2px solid #3b82f6; box-shadow:0 0 0 9999px rgba(0,0,0,.45); }
-.cropper-line{ background-color:#3b82f6; opacity:.9; }
-.cropper-point{ width:12px; height:12px; border-radius:6px; background:#fff; border:2px solid #3b82f6; opacity:1; }
-.cropper-dashed{ border-color:rgba(59,130,246,.35); }
-.cropper-face{ background:transparent; }
-
-/* ================== Modal de cámara en vivo ================== */
+/* Modal de cámara en vivo */
 #live-camera-modal {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0,0,0,0.85);
   display: none;
   flex-direction: column;
@@ -278,6 +139,7 @@ input[type="text"]:focus {
   z-index: 9999;
   animation: fadeInModal 0.5s ease forwards;
 }
+
 #live-video {
   width: 90%;
   max-height: 70vh;
@@ -285,12 +147,13 @@ input[type="text"]:focus {
   border: 2px solid #fff;
   background: #000;
 }
+
 @keyframes fadeInModal {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
 
-/* ================== Footer ================== */
+/* Footer */
 footer {
   background-color: black;
   color: white;
@@ -302,19 +165,22 @@ footer {
   margin-top: auto;
 }
 
-/* ================== Número de IMSS ================== */
+
+/*numero de imss*/
 .input-group {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 40px;
 }
+
 .input-group label {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 8px;
   color: #333;
 }
+
 .input-group input {
   padding: 12px 16px;
   width: 280px;
@@ -324,6 +190,7 @@ footer {
   transition: all 0.3s ease;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
+
 .input-group input:focus {
   border-color: #0078d4;
   box-shadow: 0 0 8px rgba(0,120,212,0.3);
